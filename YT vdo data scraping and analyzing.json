@@ -1,0 +1,908 @@
+{
+  "name": "YT vdo data scraping and analyzing",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {},
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -912,
+        -400
+      ],
+      "id": "30804dbf-b588-431b-884e-562f778ada71",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5a4b0baa-4dc5-4106-b75d-49543a3a73d6",
+              "name": "=chanelIds",
+              "value": "=[\n{\"chanelId\":\"UCQ4zIVlfhsmvds7WuKeL2Bw\"} , {\"chanelId\":\"UCAiLfjNXkNv24uhpzUgPa6A\"} , {\"chanelId\":\"UC2Xd-TjJByJyK2w1zNwY0zQ\"} \n]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -704,
+        -400
+      ],
+      "id": "1a256260-6b57-4337-ac97-3d8bfb0ef603",
+      "name": "YT channel IDs"
+    },
+    {
+      "parameters": {
+        "content": "## List of yt channels\n",
+        "height": 288,
+        "width": 832,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -976,
+        -496
+      ],
+      "typeVersion": 1,
+      "id": "7c3dd184-0340-4ae3-b6c6-c281ee1c84f3",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ab5f41dc-0426-4ecc-b6ec-e1f72fcbd438",
+              "name": "chanelId",
+              "value": "={{ $json.chanelId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        -576
+      ],
+      "id": "6209a62a-1b81-483e-b99f-5eac9e36aac2",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "content": "## List of top yt videos",
+        "height": 272,
+        "width": 672,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -112,
+        -672
+      ],
+      "typeVersion": 1,
+      "id": "28fabc41-4df4-434a-9ea7-27b8ef61ece7",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "url": "=https://www.youtube.com/feeds/videos.xml?channel_id={{ $json.chanelId }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        176,
+        -576
+      ],
+      "id": "29ed1119-1a0c-44f9-a662-57eef196801b",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "chanelIds",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -400
+      ],
+      "id": "133151f4-cc88-4786-9114-3529cd581f9d",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "batchSize": "={{ 3 }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -272,
+        -400
+      ],
+      "id": "c59c98b4-5466-43c0-b9c6-c750890619c6",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0b82e2fe-ab36-45a4-b4ef-3a3a63a99790",
+              "leftValue": "={{ $json.link }}",
+              "rightValue": "shorts",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        -576
+      ],
+      "id": "bde2d98e-e5b3-4285-af2b-907a60bb76a8",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "content": "## Scrap comments from video",
+        "height": 272,
+        "width": 608,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        592,
+        -672
+      ],
+      "typeVersion": 1,
+      "id": "940d913d-06c4-41cc-ae87-b6c35dfde20c",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        -576
+      ],
+      "id": "39457167-39f5-428d-a023-ef6eb0b04199",
+      "name": "Wait",
+      "webhookId": "45c7e7aa-18fb-432f-9d93-fe20d16f0151"
+    },
+    {
+      "parameters": {
+        "resource": "Datasets",
+        "datasetId": "={{ $json.defaultDatasetId }}",
+        "limit": null
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        -576
+      ],
+      "id": "7b0fda62-f04c-4ce6-84b1-b6bf31168db0",
+      "name": "Get dataset items",
+      "credentials": {
+        "apifyApi": {
+          "id": "NUXBBMp7mn8oXoT1",
+          "name": "Apify account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Relevance and title",
+        "height": 272,
+        "width": 912
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1248,
+        -672
+      ],
+      "typeVersion": 1,
+      "id": "45649ee2-ffbf-4470-8e1c-2a77b2681c10",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        -352
+      ],
+      "id": "53d8c91a-16a1-490b-8b40-030c091baa0e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NswtAFPbWNXL4JWI",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Hooks and outline",
+        "height": 256,
+        "width": 624,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2192,
+        -656
+      ],
+      "typeVersion": 1,
+      "id": "bfba5140-87c6-40f2-ba7a-99bf3cbe7af2",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1cd94ee1-58d4-4c90-a44a-8b6aa3bbe2fb",
+              "leftValue": "={{ $json.verdict }}",
+              "rightValue": "relevant",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2000,
+        -560
+      ],
+      "id": "a7817671-8439-48ca-9430-6a3a1df09002",
+      "name": "filter relevant comments"
+    },
+    {
+      "parameters": {
+        "batchSize": 50,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1296,
+        -576
+      ],
+      "id": "1cd1c212-c60c-4f70-bcc6-5d4207a6131c",
+      "name": "Loop Over comments"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3fb093bc-870b-4d4e-819d-8f702627d1e2",
+              "name": "socialProoff",
+              "value": "I wanted to help business by integrating automation that could reduce hassels",
+              "type": "string"
+            },
+            {
+              "id": "a8cc4532-0279-47ce-a19c-8da8ab052287",
+              "name": "toneOfVoiceDirection",
+              "value": "this is a test case make sure you use muhamash's social hooks-this is essential",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2208,
+        -560
+      ],
+      "id": "0bcc8ec7-93d1-438e-8430-6fc15e8099c6",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('filter relevant comments').item.json.contentIdea }}\n",
+        "options": {
+          "systemMessage": "=You are a helpful YouTube hook and content outline writer assistant.  \n\nYour task:\n1. Generate **high-quality, engaging hooks** for a content idea.\n2. Generate a **clear content outline** that can be used to structure the video.\n\nInput:  \n- social proof: {{ $json.socialProoff }}  \n- tone of voice: {{ $json.toneOfVoiceDirection }}  \n- content idea: build a RAG agent inside n8n  \n\nOutput format: ONLY return **valid JSON** in the following structure:\n\n{\n  \"hooks\": \"Write 1-2 engaging sentences that immediately capture attention.\",\n  \"outline\": \"Write a structured outline covering the main points, steps, or segments of the content.\"\n}\n\n⚠️ Important:\n- Do not include any text outside the JSON.\n- Do not leave fields empty. If you cannot think of a hook or outline, write a placeholder like 'Demo hook here' or 'Demo outline here'.\n\n\n{{ $json.socialProoff }}\n{{ $json.toneOfVoiceDirection }}\ncontentIdea: build a rag agent inside n8n \n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2384,
+        -560
+      ],
+      "id": "8d763a5e-6d89-4007-bf46-c2666e0489ec",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2384,
+        -352
+      ],
+      "id": "268045f8-1874-487a-9f7f-e7c1d236c6dc",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NswtAFPbWNXL4JWI",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## store content to the db",
+        "height": 304,
+        "width": 592,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2848,
+        -464
+      ],
+      "typeVersion": 1,
+      "id": "8389a2a2-170c-421f-9407-f57823372ccd",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cd32305a-8a67-426e-ba6b-715289e6e33d",
+              "name": "message.content.hook",
+              "value": "={{ $json.hooks }}",
+              "type": "string"
+            },
+            {
+              "id": "bd2dbeae-bae8-4082-ac6d-c73833007d0a",
+              "name": "message.content.outline",
+              "value": "={{ $json.outline }}",
+              "type": "string"
+            },
+            {
+              "id": "056d4137-1830-48d2-bf96-033b664c2d69",
+              "name": "message.content.contentIdea",
+              "value": "={{ $('filter relevant comments').item.json.contentIdea }}",
+              "type": "string"
+            },
+            {
+              "id": "84c7db1c-c972-4001-80f8-7057ea81ce3a",
+              "name": "comment_text",
+              "value": "={{ $('Loop Over comments').item.json.comment_text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2880,
+        -384
+      ],
+      "id": "f07d6463-bdf3-41f2-a865-977c7788ca17",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1-usXMV8MrsZCO4_MqUMEvBe9Ij0E0PW4zWdiIs3-rTg",
+          "mode": "list",
+          "cachedResultName": "yt comments scrap db",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-usXMV8MrsZCO4_MqUMEvBe9Ij0E0PW4zWdiIs3-rTg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-usXMV8MrsZCO4_MqUMEvBe9Ij0E0PW4zWdiIs3-rTg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "hooks": "={{ $json.message.content.hook }}",
+            "outlines": "={{ $json.message.content.outline }}",
+            "contentIdea": "={{ $json.message.content.contentIdea }}",
+            "comment": "={{ $json.comment_text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "comment",
+              "displayName": "comment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contentIdea",
+              "displayName": "contentIdea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hooks",
+              "displayName": "hooks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "outlines",
+              "displayName": "outlines",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contentIdea",
+              "displayName": "contentIdea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3040,
+        -384
+      ],
+      "id": "bee18c13-2e3d-4d9f-9746-933efe386e61",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "f8mC8YF14YIWJx9s",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3232,
+        -304
+      ],
+      "id": "63f9af04-98f2-4da6-a23a-cd87efbd2afb",
+      "name": "Wait1",
+      "webhookId": "6968a2a2-adb4-427c-b3cb-c7a7781b7e93"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.comment_text }}",
+        "options": {
+          "systemMessage": "You are a helpful assistant.\nBelow is a YouTube comment on one of our videos.  \n\nYour task:\n1. Determine if the comment is relevant to our content.  \n2. If it includes any questions or suggestions, use them as an idea for a future video or to improve the video content.  \n3. Always return a JSON object in one of the following formats:\n\nCase 1 (Relevant):\n{\n  \"verdict\": \"relevant\",\n  \"contentIdea\": \"Describe the content idea here\"\n}\n\nCase 2 (Irrelevant):\n{\n  \"verdict\": \"irrelevant\",\n  \"contentIdea\": \"Describe the content idea here\"\n}\n\n⚠️ Important Rules:\n- The `contentIdea` field must NEVER be empty.\n- If no real idea is found, fill `contentIdea` with a demo suggestion (e.g., \"This is a demo content idea\").\n- Return ONLY valid JSON. No explanations, no extra text.\n\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1520,
+        -560
+      ],
+      "id": "fa90fe4d-a7dd-4a24-9c09-b338cb7e74d1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "actorId": {
+          "__rl": true,
+          "value": "6B8kjqY2RLrxeDsGT",
+          "mode": "list",
+          "cachedResultName": "Youtube Comments Scraper (grow_media/youtube-comments-scraper)",
+          "cachedResultUrl": "https://console.apify.com/actors/6B8kjqY2RLrxeDsGT/input"
+        },
+        "customBody": "={\n  \"includeRawData\": false,\n  \"maxComments\": 5,\n  \"videoUrl\": \"{{ $json.link }}\"\n\n}"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        656,
+        -576
+      ],
+      "id": "da00234c-4fb6-44d9-983e-13e3bc8724fd",
+      "name": "Run an Actor --> scraping yt comments",
+      "credentials": {
+        "apifyApi": {
+          "id": "NUXBBMp7mn8oXoT1",
+          "name": "Apify account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process all incoming items\nreturn $input.all().map(item => {\n  let rawOutput = item.json.output;\n\n  let parsed = {\n    hooks: \"Demo hook here\",\n    outline: \"Demo outline here\"\n  };\n\n  try {\n    if (typeof rawOutput === \"string\" && rawOutput.trim() !== \"\") {\n      // Remove ```json and ``` backticks\n      let clean = rawOutput.replace(/```json|```/g, '').trim();\n      parsed = JSON.parse(clean);\n      \n      // If hooks is an array, join them into a single string\n      if (Array.isArray(parsed.hooks)) {\n        parsed.hooks = parsed.hooks.join(\" \");\n      }\n    }\n  } catch (e) {\n    // Keep demo fallback if parsing fails\n  }\n\n  // Ensure hooks and outline exist\n  if (typeof parsed.hooks !== \"string\" || parsed.hooks.trim() === \"\") {\n    parsed.hooks = \"Demo hook here\";\n  }\n  if (typeof parsed.outline !== \"string\" || parsed.outline.trim() === \"\") {\n    parsed.outline = \"Demo outline here\";\n  }\n\n  return { json: parsed };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2688,
+        -560
+      ],
+      "id": "098415ab-2323-4333-adc5-56e3d1f5cee0",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process all items correctly\nreturn $input.all().map(item => {\n  let output = item.json;\n\n  try {\n    // The AI returns string inside 'output' field\n    if (typeof output.output === \"string\" && output.output.trim() !== \"\") {\n      // Remove triple backticks if present\n      let str = output.output.replace(/```json|```/g, '').trim();\n      const parsed = JSON.parse(str);\n      output = parsed;\n    }\n  } catch (e) {\n    // ignore parse errors, fallback handled below\n  }\n\n  // Ensure verdict exists\n  if (!output.verdict) {\n    output.verdict = \"irrelevant\";\n  }\n\n  // Ensure contentIdea exists and is not empty\n  if (!output.contentIdea || output.contentIdea.trim() === \"\") {\n    output.contentIdea = \"This is a demo content idea\";\n  }\n\n  return { json: output };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1808,
+        -560
+      ],
+      "id": "9853346a-2e72-4fe8-b090-03243170bd87",
+      "name": "script for extracting  reqiured values"
+    }
+  ],
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2025-09-02T20:47:29.364+06:00",
+          "Readable date": "September 2nd 2025, 8:47:29 pm",
+          "Readable time": "8:47:29 pm",
+          "Day of week": "Tuesday",
+          "Year": "2025",
+          "Month": "September",
+          "Day of month": "02",
+          "Hour": "20",
+          "Minute": "47",
+          "Second": "29",
+          "Timezone": "Asia/Dhaka (UTC+06:00)"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "YT channel IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT channel IDs": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor --> scraping yt comments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get dataset items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get dataset items": {
+      "main": [
+        [
+          {
+            "node": "Loop Over comments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over comments": {
+      "main": [
+        [],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filter relevant comments": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loop Over comments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "script for extracting  reqiured values",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor --> scraping yt comments": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "script for extracting  reqiured values": {
+      "main": [
+        [
+          {
+            "node": "filter relevant comments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "108006fa-c73e-446b-9d2f-16b30b03602d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "af419fc8e9e4393c747f97dec9658158ed5273b6d2c0d0290736460c4c1a82ca"
+  },
+  "id": "K7kUOLKsBiolqoi0",
+  "tags": []
+}
