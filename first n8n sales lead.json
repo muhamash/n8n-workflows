@@ -1,0 +1,605 @@
+{
+  "name": "first n8n sales lead",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "formTitle": "First n8n (lead submission for sale)",
+        "formDescription": "This is a test and first n8n workflow for sale ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "name",
+              "placeholder": "place you name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "email",
+              "placeholder": "place your email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "budget",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "< 100 tk"
+                  },
+                  {
+                    "option": "> 100 tk"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "company name",
+              "placeholder": "place your company",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "project description",
+              "placeholder": "....project description",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "timeline",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "1 wk"
+                  },
+                  {
+                    "option": "2 wk"
+                  },
+                  {
+                    "option": "3 wk+"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -832,
+        -272
+      ],
+      "id": "ddfac7fc-22c6-4f06-be90-3964521db24c",
+      "name": "On form submission",
+      "webhookId": "855fe297-11a7-4f72-acb0-514fdcb6b537",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "9U42jsgOADKcV0NJ",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1F9htxpQGeJ39X-2jVUm9IWxCLN_V4ph_pmZbPRJVrOY",
+          "mode": "list",
+          "cachedResultName": "fisrt n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1F9htxpQGeJ39X-2jVUm9IWxCLN_V4ph_pmZbPRJVrOY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1F9htxpQGeJ39X-2jVUm9IWxCLN_V4ph_pmZbPRJVrOY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $json.name }}",
+            "email": "={{ $json.email }}",
+            "budget": "={{ $json.budget }}",
+            "company name": "={{ $json['company name'] }}",
+            "timeline": "={{ $json.timeline }}",
+            "project desciption": "={{ $json['project description'] }}",
+            " submitted date": "={{ $json.submittedAt.toDateTime().format('yyyy-MM-dd') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company name",
+              "displayName": "company name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "budget",
+              "displayName": "budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "project desciption",
+              "displayName": "project desciption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timeline",
+              "displayName": "timeline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": " submitted date",
+              "displayName": " submitted date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -640,
+        -352
+      ],
+      "id": "c2924fea-6512-4cb1-bbcf-84ce9d935cc2",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "f8mC8YF14YIWJx9s",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=test sales lead\n\nname: {{ $json.name }}\nemail:{{ $json.email }}\ncompany:{{ $json['company name'] }}\nbudget:{{ $json.budget }}\nproject:{{ $json['project desciption'] }}\ntimeline:{{ $json.timeline }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a helpful assistant\nYou are an AI Sales Assistant specialized in generating high-quality sales leads.  \nYour goal is to create a concise, compelling, and personalized lead message for potential clients.  \nTone: Professional, yet friendly and engaging.  \nOutput format: A short paragraph (50–100 words) followed by a CTA (Call to Action).  \nYou are an AI Sales Assistant. Generate a professional, concise, and persuasive sales message based on the following lead information. The message must include a greeting using the lead's name, a value proposition, and a clear call to action (CTA) to schedule a meeting or call.\n\nGenerate a personalized sales lead message for the following business:  \nLead Details:\n- Name: {{ $json.name }}\n- Email: {{ $json.email }}\n- Company: {{ $json[\"company name\"] }}\n- Budget: {{ $json.budget }}\n- Project Description: {{ $json[\"project desciption\"] }}\n- Timeline: {{ $json.timeline }}\n\nGenerate a friendly and professional sales lead message (50–100 words) that highlights how our service can help, aligns with their budget and timeline, and ends with a strong call-to-action to schedule a quick meeting.\n\n\nMake it persuasive, value-driven, and include a strong call-to-action to schedule a meeting/demo.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -416,
+        -448
+      ],
+      "id": "82405421-79aa-4f9f-b7cf-c6747661dfd1",
+      "name": "first n8n send sales email"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        288
+      ],
+      "id": "b5aee7a0-0c05-4c61-8713-539315dfdd4d",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dSalhI5InwowInWe",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1F9htxpQGeJ39X-2jVUm9IWxCLN_V4ph_pmZbPRJVrOY",
+          "mode": "list",
+          "cachedResultName": "fisrt n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1F9htxpQGeJ39X-2jVUm9IWxCLN_V4ph_pmZbPRJVrOY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 688841011,
+          "mode": "list",
+          "cachedResultName": "projects",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1F9htxpQGeJ39X-2jVUm9IWxCLN_V4ph_pmZbPRJVrOY/edit#gid=688841011"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -496,
+        304
+      ],
+      "id": "568661aa-20f6-46fd-99e0-2ba8046e6703",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "f8mC8YF14YIWJx9s",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"subject\": \"Business Overview: Key Cities in California\",\n  \"body\": \"Dear Team,\\n\\nHere is the latest report for California:\\n\\nCities Covered:\\n- Los Angeles\\n- San Francisco\\n- San Diego\\n\\nTotal Cities: 3\\n\\nBest regards,\\n[Your Company Name]\"\n}\n",
+        "autoFix": true,
+        "customizeRetryPrompt": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -272,
+        304
+      ],
+      "id": "86b0a5fc-60e0-448e-a5b3-0fa9005f81fc",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        480
+      ],
+      "id": "d1717a02-cd1c-41aa-9076-ca41e1c24561",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dSalhI5InwowInWe",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ed724a51-7aa8-453b-a9f0-736ddf4b6861",
+              "name": "subjec",
+              "value": "={{ $json.output.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "8a40392a-e928-4f81-97d1-271b169e4492",
+              "name": "body",
+              "value": "={{ $json.output.body }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        -384
+      ],
+      "id": "485ca71f-7678-439e-9218-f2eea3ef4e07",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "amdashraful55@gmail.com",
+        "subject": "ACTION: new lead",
+        "message": "=hey ash,\ngot new lead!! test n8n\n\n\n#project: {{ $('On form submission').item.json['project description'] }}\n\n#budget: {{ $('On form submission').item.json.budget }}\n\n#company {{ $('On form submission').item.json['company name'] }}\n\n##email \n\n###subject line\n{{ $json.subjec }}\n\n###email body\n{{ $json.body }}",
+        "responseType": "freeText",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        176,
+        -352
+      ],
+      "id": "43b89acf-d472-46cd-9083-3234c34c3f2a",
+      "name": "human in the loop",
+      "webhookId": "6c97a9f4-baeb-4236-bd38-4d09ad87c2d4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "imdbVsJUsCLHVmTR",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.data.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "approved",
+              "description": "\"yes\""
+            },
+            {
+              "category": "denied",
+              "description": "\"no\""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        384,
+        -352
+      ],
+      "id": "d0826d25-82f8-4108-bbbd-5446a324aa03",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -144
+      ],
+      "id": "153cc5f9-af2a-422a-9b57-16120c7d6cfe",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dSalhI5InwowInWe",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.email }}",
+        "subject": "= {{ $('Edit Fields').item.json.subjec }}",
+        "message": "= {{ $('Edit Fields').item.json.body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        736,
+        -448
+      ],
+      "id": "b5a1fc07-b8e2-4c14-b582-3a979870f0a6",
+      "name": "send lead",
+      "webhookId": "d18db7fd-b760-42c7-af32-ade754226e07",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "imdbVsJUsCLHVmTR",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Feedback sending!! test msz!!",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a helpful assistant"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        -48
+      ],
+      "id": "f268eca4-c2f2-4151-b754-e52bfc7df642",
+      "name": "revision"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "first n8n send sales email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "first n8n send sales email",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "revision",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "first n8n send sales email",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "revision",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "first n8n send sales email",
+            "type": "ai_outputParser",
+            "index": 0
+          },
+          {
+            "node": "revision",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "first n8n send sales email": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "human in the loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "human in the loop": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "send lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b0a4d148-4dd5-468f-8f41-93dc8e898e62",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "af419fc8e9e4393c747f97dec9658158ed5273b6d2c0d0290736460c4c1a82ca"
+  },
+  "id": "scr2HUu50PWZ2OI1",
+  "tags": []
+}
