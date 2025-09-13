@@ -1,0 +1,461 @@
+{
+  "name": "Writes Viral Contents --> twitter parasyte system",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "twitter parasyte system",
+        "formDescription": "Please add a keyword to trigger the system",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "keyword",
+              "placeholder": "ai automation with n8n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -672,
+        0
+      ],
+      "id": "8cdc906e-b212-4818-b125-9433e8672914",
+      "name": "On form submission",
+      "webhookId": "6f01596b-0df8-4e37-a347-9a2b63c28bcd"
+    },
+    {
+      "parameters": {
+        "actorId": {
+          "__rl": true,
+          "value": "mpS4GhoarZWx8LMzZ",
+          "mode": "list",
+          "cachedResultName": "X.com Twitter API Scraper (xtdata/twitter-x-scraper)",
+          "cachedResultUrl": "https://console.apify.com/actors/mpS4GhoarZWx8LMzZ/input"
+        },
+        "customBody": "={\n    \"customMapFunction\": \"(object) => { return {...object} }\",\n    \"end\": \"2021-07-02\",\n    \"includeSearchTerms\": false,\n    \"maxItems\": 5,\n    \"onlyImage\": false,\n    \"onlyQuote\": false,\n    \"onlyTwitterBlue\": false,\n    \"onlyVerifiedUsers\": false,\n    \"onlyVideo\": false,\n    \"searchTerms\": [\n        \"={{ $json.keyword }}\"\n    ],\n    \"sort\": \"Top\",\n    \"start\": \"2021-07-01\",\n    \"tweetLanguage\": \"en\"\n}"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        -208
+      ],
+      "id": "b35e2f18-ab37-4452-aa53-88b2581ce7a7",
+      "name": "Run an Actor",
+      "credentials": {
+        "apifyApi": {
+          "id": "NUXBBMp7mn8oXoT1",
+          "name": "Apify account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Datasets",
+        "datasetId": "={{ $json.defaultDatasetId }}",
+        "limit": 5
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        -208
+      ],
+      "id": "994ef65a-843e-4c53-ace2-5952893eebb3",
+      "name": "Get dataset items",
+      "credentials": {
+        "apifyApi": {
+          "id": "NUXBBMp7mn8oXoT1",
+          "name": "Apify account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## scrape and get data",
+        "height": 240,
+        "width": 432,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -368,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "e41c64f0-1fa7-4ec3-a667-f86e6168bcaf",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        96,
+        -64
+      ],
+      "id": "00ec895c-9530-4055-b464-7bc01dcc1619",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Classify a tweet for an automation-focused audience.  \nReturn only raw JSON. Do not include code fences, explanations, or extra text.  \n\nOutput format (exactly): {\"verdict\": \"relevant\"} or {\"verdict\": \"not_relevant\"}  \n\nClassification Rules:\n\n- \"relevant\" if the tweet contains:  \n  • step-by-step guides, how-tos, or tutorials  \n  • real automation builds or project breakdowns  \n  • APIs, webhooks, or integrations  \n  • agent or RPA workflows  \n  • templates, patterns, or operations use cases  \n  • generic AI/tech news or announcements , ai agent \n  • motivational or personal updates  \n  • non-automation coding tips or programming notes  \n  • crypto, politics, or finance content  \n  • tool discounts, promotions, or marketing hype  \n  • vague claims with no concrete build, tutorial, or impact \n- coading, programming language, software, framework, library\n\n- \"not_relevant\" if the tweet does not fit any of the above categories or is completely off-topic.  \n\n\n",
+              "role": "model"
+            },
+            {
+              "content": "Classify a tweet for an automation-focused audience.  \nReturn only a raw JSON object.  \nDo not add quotes, escape characters, or trailing spaces/newlines.  \nValid examples: {\"verdict\": \"relevant\"} or {\"verdict\": \"not_relevant\"}\n\nif you unable to detect or something wrong on the output  than return {\"verdict\": \"not_relevant\"}\n"
+            },
+            {
+              "content": "=here is the tweet you have to classify:\n\n{{ $('Get dataset items').item.json.full_text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        272,
+        96
+      ],
+      "id": "f2281e52-8b50-457c-9726-4aba03c9cec0",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dSalhI5InwowInWe",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let raw = $json[\"content\"][\"parts\"][0][\"text\"];\n\n// Remove code fences/newlines if any\nraw = raw.trim();\n\n// If the model wrapped it as a string, parse twice\nlet parsed;\ntry {\n  parsed = JSON.parse(raw); // will succeed if it's raw JSON\n} catch (e) {\n  parsed = JSON.parse(JSON.parse(raw)); // handles stringified JSON\n}\n\nreturn { json: parsed };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        96
+      ],
+      "id": "2b41c1e0-2b5b-4a7c-9656-499dded51f61",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "18530274-a44c-438c-a70b-b5d85f11330b",
+              "leftValue": "={{ $json.verdict }}",
+              "rightValue": "relevant",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        752,
+        96
+      ],
+      "id": "2725e3b4-e44b-41bb-a256-4f3466b5a728",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash-thinking-exp",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash-thinking-exp"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=#overview\n\nYou are intelligent smart writting assistant\n\n##task\nRe write tweets i am going to giving you is way encapsulated the original theme but uses different words\n\ni am targeting the audience who wnated to learn or build autimaiton and technology and coding\n\n#rules\nuse o fluff , young tone when re witting the tweet\nonly output the tweets and thats it"
+            },
+            {
+              "content": "=here is the tweets to rewrite\n{{ $('Get dataset items').item.json.full_text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        944,
+        96
+      ],
+      "id": "90f26262-690b-48f3-ae26-81b2cc7d7cd4",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dSalhI5InwowInWe",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ntqT54H8bKYdiSuE2Ds9QvAbVCMBp-ayf8hpOzTn5FE",
+          "mode": "list",
+          "cachedResultName": "new tweets idea",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ntqT54H8bKYdiSuE2Ds9QvAbVCMBp-ayf8hpOzTn5FE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ntqT54H8bKYdiSuE2Ds9QvAbVCMBp-ayf8hpOzTn5FE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "keyword": "={{ $('On form submission').item.json.keyword }}",
+            "re write tweets": "={{ $json.content.parts[0].text }}",
+            "original post": "={{ $('Loop Over Items').item.json.full_text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "original post",
+              "displayName": "original post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "re write tweets",
+              "displayName": "re write tweets",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1344,
+        96
+      ],
+      "id": "45b10717-aefb-44f5-a963-cf9cb8fad8dd",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ESrPKDHJDNkXZ71V",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Set a keyword to scrape from X",
+        "height": 192,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "f3542714-b67e-4b27-bd7e-88e995beef62",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Filter relevant tweets",
+        "height": 304,
+        "width": 624,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        240,
+        16
+      ],
+      "typeVersion": 1,
+      "id": "930b89db-6e97-48a3-a1d5-579a7ec29b92",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## re write the tweets and append to the excel",
+        "height": 304,
+        "width": 640
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        896,
+        16
+      ],
+      "typeVersion": 1,
+      "id": "dd4b703b-780d-4851-931c-7dfcddc182eb",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor": {
+      "main": [
+        [
+          {
+            "node": "Get dataset items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get dataset items": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2b14e2f0-7e7c-4d16-9e2e-75dfe4aeaad5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "af419fc8e9e4393c747f97dec9658158ed5273b6d2c0d0290736460c4c1a82ca"
+  },
+  "id": "bB5aQhLjGdyYG1fX",
+  "tags": []
+}
