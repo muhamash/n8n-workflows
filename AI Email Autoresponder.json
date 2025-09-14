@@ -1,0 +1,311 @@
+{
+  "name": "AI Email Autoresponder",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "includeSpamTrash": true,
+          "labelIds": [
+            "INBOX"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -608,
+        -160
+      ],
+      "id": "97c865c2-edda-4084-8cee-aa3438aad464",
+      "name": "Gmail Trigger",
+      "retryOnFail": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "G3SMdr1VuJSivemI",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "253ee2c7-d41e-4056-90d1-4431e85c5db8",
+              "name": "message",
+              "value": "={{ $json.snippet }}",
+              "type": "string"
+            },
+            {
+              "id": "86580eba-0853-4f80-86fd-21d5aa498432",
+              "name": "subject",
+              "value": "={{ $json.Subject }}",
+              "type": "string"
+            },
+            {
+              "id": "65ebc8df-b0ab-422a-8c6a-a06a0f7554df",
+              "name": "sender",
+              "value": "={{ $json.From }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -400,
+        -160
+      ],
+      "id": "c5c8cee8-b85b-4c56-8a49-918cfd3f4d56",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        96
+      ],
+      "id": "5998fb3d-dc67-4e9f-9248-d75d89f6ee31",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NswtAFPbWNXL4JWI",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject:  {{ $json.subject }}\nBody:  {{ $json.message }}\nsender : {{ $json.sender }}\nMy name : No name ceo of n8n\n\nPlease draft a professional reply to this email.  ",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an AI email assistant. Your role is to read an incoming email (subject and body) and generate a clear, professional, and context-aware reply.  \n\nGuidelines:\n1. Always maintain a polite, professional, and helpful tone.  \n2. Understand the sender’s intent from the subject and body.  \n3. Handle cases appropriately:\n   - Request/Inquiry → provide information or next steps.  \n   - Meeting/Collaboration → suggest/confirm times politely.  \n   - Complaint/Issue → empathize, apologize if needed, suggest a resolution.  \n   - Positive Feedback/Thank You → reply with gratitude.  \n   - Spam/Irrelevant → politely decline or ignore.  \n4. Keep replies concise but complete.  \n5. Format as a proper email (greeting, body, closing).  \n6. Do not reveal you are an AI. Write as if you are a professional human.  \n7. Only return the reply text. No explanations.  \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -192,
+        -160
+      ],
+      "id": "a26b90bf-da34-418d-89a0-f6fcb270e649",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"body\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"subject\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        48
+      ],
+      "id": "6ccb97ba-d4b4-43f9-b5b1-5ca5034cd032",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Edit Fields').item.json.sender }}",
+        "subject": "={{ $json.output.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.output.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        160,
+        -160
+      ],
+      "id": "009dca17-4425-48e7-a3c5-c5c17f85a07a",
+      "name": "Send a message",
+      "webhookId": "734b6798-3fd6-41e0-b892-d5281c4e810a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "G3SMdr1VuJSivemI",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1lHrVwF4FCfRYz-xzX1NPFYLWcasqpLhqG4dxhngg5Vo",
+          "mode": "list",
+          "cachedResultName": "ai email responder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lHrVwF4FCfRYz-xzX1NPFYLWcasqpLhqG4dxhngg5Vo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lHrVwF4FCfRYz-xzX1NPFYLWcasqpLhqG4dxhngg5Vo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $('Edit Fields').item.json.message }}",
+            "sender": "={{ $('Edit Fields').item.json.sender }}",
+            "subject": "={{ $('Edit Fields').item.json.subject }}",
+            "reply text": "={{ $('AI Agent').item.json.output.body }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sender",
+              "displayName": "sender",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "reply text",
+              "displayName": "reply text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        357.7744312541424,
+        -16
+      ],
+      "id": "6ef2d7ac-cfb1-49cd-97c8-866797fe3173",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ESrPKDHJDNkXZ71V",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ec771850-2abe-4d4e-8e06-3d8cf83f063b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "af419fc8e9e4393c747f97dec9658158ed5273b6d2c0d0290736460c4c1a82ca"
+  },
+  "id": "3VGz4PEX6vtk7us8",
+  "tags": []
+}
